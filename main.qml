@@ -28,6 +28,19 @@ Window {
             id:urlOrSearch
             width:parent.width-backButton.width-frontButton.width
             text: "https://lordsof.tech"
+
+            activeFocusOnPress: true
+
+            selectByKeyboard: true
+            selectByMouse: true
+            selectedTextColor: "#23B9CE"
+
+
+            onFocusChanged: selectAll()
+
+            Keys.onEnterPressed: webView.url = text
+            Keys.onReturnPressed: webView.url = text
+
         }
 
     }
@@ -37,6 +50,6 @@ Window {
        width:parent.width
        height:parent.height-buttoncontainer.height
        anchors.top:buttoncontainer.bottom
-        url: urlOrSearch.text
+
     }
 }
