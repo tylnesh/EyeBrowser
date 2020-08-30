@@ -7,11 +7,8 @@ import QtQuick.Controls 2.12
 import com.eyebrowser.linkvalidator 1.0
 
 Item {
-
     property string siteName: webView.title;
-
     signal newTab();
-
 
     LinkValidator {
         id: validator
