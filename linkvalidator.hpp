@@ -2,8 +2,9 @@
 #define LINKVALIDATOR_H
 
 #include <QObject>
+#include <QString>
 
-class LinkValidator
+class LinkValidator : public QObject
 {
     Q_OBJECT
 public:
