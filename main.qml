@@ -19,7 +19,6 @@ Window {
             text: firstTab.siteName
             width: implicitWidth
         }
-
     }
 
 
@@ -34,9 +33,5 @@ Window {
             id:firstTab
             onNewTab: tabBar.addItem(WebViewItem)
         }
-
-
-
     }
-
 }
