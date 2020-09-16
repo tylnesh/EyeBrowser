@@ -9,6 +9,7 @@ import com.eyebrowser.linkvalidator 1.0
 Item {
     property string siteName: webView.title;
     signal newTab();
+    signal closeTab();
 
     LinkValidator {
         id: validator
@@ -57,8 +58,17 @@ Item {
                     webView.url = validator.validateLink(text)
                     webView.forceActiveFocus()
                 }
+
             }
+
+            Button {
+                id: closeTabButton
+                text: "x"
+                onClicked: {
+                    closeTab();
+                }
         }
+    }
     }
     WebEngineView {
         id: webView

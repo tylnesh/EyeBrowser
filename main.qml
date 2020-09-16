@@ -15,6 +15,7 @@ Window {
 
     }
 
+
     Component {
         id: tabComponent
 
@@ -41,15 +42,12 @@ Window {
             id: tabRepeater
             model: 0
 
+
+
             TabButton {
                 text: "Tab n° " + index
                 width: implicitWidth
-                Button
-                {
-                    anchors.right: parent.right
-                    text: "x"
-                    onClicked: {}
-                }
+
             }
         }
     }
@@ -68,11 +66,14 @@ Window {
                     tabRepeater.model++
                     console.log(tabRepeater.model)
 
-                    var newTabItem = tabComponent.createObject(null, {
-                                                                   "id": "tabName"
-                                                               })
+                    var newTabItem = tabComponent.createObject(null, {"id": "tabName"})
                     stackLayout.children.push(newTabItem)
-                    //tabBar.addItem(newTabItem);
+                }
+
+                onCloseTab: {
+                    console.log(tabRepeater.model)
+                    console.log(tabBar.currentIndex)
+
                 }
             }
 
