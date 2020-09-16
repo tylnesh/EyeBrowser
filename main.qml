@@ -11,16 +11,48 @@ Window {
     height: 600
     title: qsTr("EyeBrowser")
 
-    TabBar{
-    id: tabBar
-    width: parent.width
+    Component.onCompleted: {
 
-    TabButton {
-            text: firstTab.siteName
-            width: implicitWidth
+    }
+
+    Component {
+        id: tabComponent
+
+        WebViewItem {
+            id: tabView
+            onNewTab: {
+                tabRepeater.model++
+                console.log(tabRepeater.model)
+
+                var newTabItem = tabComponent.createObject(null, {
+                                                               "id": "tabName"
+                                                           })
+                stackLayout.children.push(newTabItem)
+                //tabBar.addItem(newTabItem);
+            }
         }
     }
 
+    TabBar {
+        id: tabBar
+        width: parent.width
+
+        Repeater {
+            id: tabRepeater
+            model: 0
+
+            TabButton {
+                text: "Tab n° " + index
+                width: implicitWidth
+                Button
+                {
+                    anchors.right: parent.right
+                    text: "x"
+                    onClicked: {}
+                }
+            }
+        }
+    }
 
     StackLayout {
         id: stackLayout
@@ -29,9 +61,20 @@ Window {
         height: parent.height - tabBar.height
         currentIndex: tabBar.currentIndex
 
-        WebViewItem{
-            id:firstTab
-            onNewTab: tabBar.addItem(WebViewItem)
-        }
+
+            WebViewItem {
+                id: firstTab
+                onNewTab: {
+                    tabRepeater.model++
+                    console.log(tabRepeater.model)
+
+                    var newTabItem = tabComponent.createObject(null, {
+                                                                   "id": "tabName"
+                                                               })
+                    stackLayout.children.push(newTabItem)
+                    //tabBar.addItem(newTabItem);
+                }
+            }
+
     }
 }

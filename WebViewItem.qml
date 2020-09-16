@@ -34,8 +34,9 @@ Item {
             Button {
                 id: addTabButton
                 text: "+"
-                onClicked: newTab();
-                //onClicked:tabBar.addItem()
+                onClicked: {
+                    newTab();
+                }
             }
             TextEdit {
                 id: urlOrSearch
