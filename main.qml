@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import com.eyebrowser.linkvalidator 1.0
 
+
 Window {
     visible: true
     width: 800
@@ -14,6 +15,12 @@ Window {
     Component.onCompleted: {
 
     }
+
+    ListModel {
+        id:tabModel
+
+    }
+
 
 
     Component {
@@ -34,18 +41,20 @@ Window {
         }
     }
 
+
+
     TabBar {
         id: tabBar
         width: parent.width
 
         Repeater {
             id: tabRepeater
-            model: 0
+            model: tabModel
 
 
 
             TabButton {
-                text: "Tab n° " + index
+                text: stackLayout.activeFocusOnTab
                 width: implicitWidth
 
             }
@@ -58,21 +67,23 @@ Window {
         width: parent.width
         height: parent.height - tabBar.height
         currentIndex: tabBar.currentIndex
-
+        onCurrentIndexChanged: {
+            console.log(currentIndex)
+        }
 
             WebViewItem {
                 id: firstTab
                 onNewTab: {
-                    tabRepeater.model++
-                    console.log(tabRepeater.model)
+                    //tabRepeater.model++
 
                     var newTabItem = tabComponent.createObject(null, {"id": "tabName"})
+                    tabModel.append(tabComponent.createObject(null, {"id": "tabName"}));
+
                     stackLayout.children.push(newTabItem)
                 }
 
                 onCloseTab: {
-                    console.log(tabRepeater.model)
-                    console.log(tabBar.currentIndex)
+                    tabModel.remove(stackLayout.currentIndex)
 
                 }
             }
