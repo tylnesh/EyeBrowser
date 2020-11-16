@@ -21,7 +21,9 @@ Window {
 
     }
 
-
+ //   WebEngineSettings{
+ //       pluginsEnabled: true
+ //   }
 
     Component {
         id: tabComponent

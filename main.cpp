@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 
     QtWebEngine::initialize();
 
+
     QQmlApplicationEngine engine;
     qmlRegisterType<LinkValidator>("com.eyebrowser.linkvalidator",1,0,"LinkValidator");
 

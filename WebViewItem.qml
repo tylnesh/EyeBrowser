@@ -6,10 +6,13 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import com.eyebrowser.linkvalidator 1.0
 
-Item {
+Rectangle {
     property string siteName: webView.title;
     signal newTab();
     signal closeTab();
+
+
+
 
     LinkValidator {
         id: validator
@@ -42,7 +45,7 @@ Item {
             TextEdit {
                 id: urlOrSearch
                 width: parent.width - backButton.width - frontButton.width
-                text: "https://lordsof.tech"
+                text: "https://helpx.adobe.com/flash-player.html"
 
                 activeFocusOnPress: true
 
@@ -57,6 +60,7 @@ Item {
 
                     webView.url = validator.validateLink(text)
                     webView.forceActiveFocus()
+
                 }
 
             }
@@ -71,8 +75,10 @@ Item {
     }
     }
     WebEngineView {
+
         id: webView
         width: parent.width
+        settings.pluginsEnabled: true
         height: parent.height - buttoncontainer.height
         anchors.top: buttoncontainer.bottom
         onUrlChanged: urlOrSearch.text = webView.url
