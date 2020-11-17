@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.0, 2020-11-16T10:30:06. -->
+<!-- Written by QtCreator 4.11.0, 2020-11-17T20:11:04. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -358,7 +358,8 @@
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/tylnesh/devel/EyeBrowser/EyeBrowser.pro</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/tylnesh/devel/EyeBrowser/EyeBrowser.pro</value>
-    <value type="QString" key="RunConfiguration.Arguments">-enable-pepper-testing --ppapi-flash-version=16.0.0.235 --ppapi-flash-path=/home/tylnesh/libpepflashplayer.so</value>
+    <value type="QString" key="RunConfiguration.Arguments">--enable-pepper-testing --ppapi-flash-path=~/libpepflashplayer.so --no-sandbox
+</value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
