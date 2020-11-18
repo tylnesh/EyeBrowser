@@ -7,12 +7,9 @@ import QtQuick.Controls 2.12
 import com.eyebrowser.linkvalidator 1.0
 
 Rectangle {
-    property string siteName: webView.title;
-    signal newTab();
-    signal closeTab();
-
-
-
+    property string siteName: webView.title
+    signal newTab
+    signal closeTab
 
     LinkValidator {
         id: validator
@@ -35,13 +32,6 @@ Rectangle {
                 onClicked: webView.goFront()
             }
 
-            Button {
-                id: addTabButton
-                text: "+"
-                onClicked: {
-                    newTab();
-                }
-            }
             TextEdit {
                 id: urlOrSearch
                 width: parent.width - backButton.width - frontButton.width
@@ -60,28 +50,61 @@ Rectangle {
 
                     webView.url = validator.validateLink(text)
                     webView.forceActiveFocus()
-
                 }
-
             }
-
-            Button {
-                id: closeTabButton
-                text: "x"
-                onClicked: {
-                    closeTab();
-                }
         }
-    }
     }
     WebEngineView {
 
         id: webView
         width: parent.width
-        settings.pluginsEnabled: true
         height: parent.height - buttoncontainer.height
         anchors.top: buttoncontainer.bottom
+
+        settings.pluginsEnabled: true // needed for the adobe flash plugin to work
+
         onUrlChanged: urlOrSearch.text = webView.url
 
+        property int spX: 0
+        property int spY: 0
+
+        onScrollPositionChanged: {
+
+            var x = webView.scrollPosition.x
+            var y = webView.scrollPosition.y
+
+            const update = (xChange, yChange) => {
+              const newX = x + xChange;
+              const newY = y + yChange;
+              const command = "window.scrollTo(" + newX + ", " + newY + ");"
+              webView.runJavaScript(command);
+              webView.spX = newX;
+              webView.spY = newY;
+            }
+
+            //TODO: need to add a workaround for the case of scroll distance left smaller than the size of the window. Probably using
+            // window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+
+            if (x > webView.spX) {
+                update(webview.width, 0)
+            } else if (x < webView.spX) {
+                update(-webView.width,0)
+            }
+
+            if (y > webView.spY) {
+                update(0, webView.height)
+            } else if (y < webView.spY) {
+                update(0, -webView.height)
+            }
+
+        }
+
+
+         onGeometryChangeRequested: {
+             window.x = geometry.x
+             window.y = geometry.y
+             window.width = geometry.width
+             window.height = geometry.height
+         }
     }
 }
