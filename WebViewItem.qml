@@ -54,8 +54,8 @@ Rectangle {
             }
         }
     }
-    WebEngineView {
 
+    WebEngineView {
         id: webView
         width: parent.width
         height: parent.height - buttoncontainer.height
@@ -68,6 +68,9 @@ Rectangle {
         property int spX: 0
         property int spY: 0
 
+        property int scrollHeight: 0
+        property int scrollWidth: 0
+
         onScrollPositionChanged: {
 
             var x = webView.scrollPosition.x
@@ -76,6 +79,18 @@ Rectangle {
             const update = (xChange, yChange) => {
               const newX = x + xChange;
               const newY = y + yChange;
+
+
+
+              webView.runJavaScript("document.body.scrollHeight", result => { webView.scrollHeight = result});
+              webView.runJavaScript("document.body.scrollWidth", result => { webView.scrollWidth = result});
+
+              if (xChange > 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = webView.scrollWidth
+              if (yChange > 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = webView.scrollHeight
+
+              if (xChange < 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = 0
+              if (yChange < 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = 0
+
               const command = "window.scrollTo(" + newX + ", " + newY + ");"
               webView.runJavaScript(command);
               webView.spX = newX;
