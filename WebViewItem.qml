@@ -5,6 +5,7 @@ import QtWebEngine 1.8
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import com.eyebrowser.linkvalidator 1.0
+//import "GazeCloudAPI.js" as Gaze
 
 Rectangle {
     property string siteName: webView.title
@@ -63,6 +64,10 @@ Rectangle {
         height: parent.height - buttoncontainer.height
         anchors.top: buttoncontainer.bottom
 
+        userScripts: {
+
+        }
+
 
         settings.pluginsEnabled: true // needed for the adobe flash plugin to work
 
@@ -77,6 +82,7 @@ Rectangle {
         onScrollPositionChanged: {
 
             //TODO: Add a short delay between scroll events so that user doesn't scroll past the content too fast.
+            const delay = 500
 
             var x = webView.scrollPosition.x
             var y = webView.scrollPosition.y
@@ -88,16 +94,23 @@ Rectangle {
               webView.runJavaScript("document.body.scrollHeight", result => { webView.scrollHeight = result});
               webView.runJavaScript("document.body.scrollWidth", result => { webView.scrollWidth = result});
 
+                console.log("yChange: " + yChange);
+                console.log("newY: " + newY);
+                console.log("webView.scrollHeight: " + webView.scrollHeight);
+                console.log("Math.abs(webView.scrollHeight - newY) " + webView.scrollHeight);
+
               if (xChange > 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = webView.scrollWidth
               if (yChange > 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = webView.scrollHeight
 
               if (xChange < 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = 0
               if (yChange < 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = 0
 
-              const command = "window.scrollTo(" + newX + ", " + newY + ");"
+              const command = "window.setTimeout(window.scrollTo(" + newX + ", " + newY + "),"+ delay + ");"
               webView.runJavaScript(command);
               webView.spX = newX;
               webView.spY = newY;
+
+
             }
 
             if (x > webView.spX) {
