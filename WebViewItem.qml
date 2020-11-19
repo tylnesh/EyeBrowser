@@ -11,6 +11,8 @@ Rectangle {
     signal newTab
     signal closeTab
 
+    Component.onCompleted: webView.url = urlOrSearch.text
+
     LinkValidator {
         id: validator
     }
@@ -61,6 +63,7 @@ Rectangle {
         height: parent.height - buttoncontainer.height
         anchors.top: buttoncontainer.bottom
 
+
         settings.pluginsEnabled: true // needed for the adobe flash plugin to work
 
         onUrlChanged: urlOrSearch.text = webView.url
@@ -73,14 +76,14 @@ Rectangle {
 
         onScrollPositionChanged: {
 
+            //TODO: Add a short delay between scroll events so that user doesn't scroll past the content too fast.
+
             var x = webView.scrollPosition.x
             var y = webView.scrollPosition.y
 
             const update = (xChange, yChange) => {
               const newX = x + xChange;
               const newY = y + yChange;
-
-
 
               webView.runJavaScript("document.body.scrollHeight", result => { webView.scrollHeight = result});
               webView.runJavaScript("document.body.scrollWidth", result => { webView.scrollWidth = result});
@@ -97,9 +100,6 @@ Rectangle {
               webView.spY = newY;
             }
 
-            //TODO: need to add a workaround for the case of scroll distance left smaller than the size of the window. Probably using
-            // window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-
             if (x > webView.spX) {
                 update(webview.width, 0)
             } else if (x < webView.spX) {
@@ -113,7 +113,6 @@ Rectangle {
             }
 
         }
-
 
          onGeometryChangeRequested: {
              window.x = geometry.x
