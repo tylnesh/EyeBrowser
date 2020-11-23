@@ -5,19 +5,11 @@ import QtWebEngine 1.8
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import com.eyebrowser.linkvalidator 1.0
-import "GazeCloudAPI.js" as Gaze
 
 Rectangle {
     property string siteName: webView.title
     signal newTab
     signal closeTab
-
-
-
-
-
-
-
 
     Component.onCompleted: {
 
@@ -56,6 +48,8 @@ Rectangle {
                 id: urlOrSearch
                 width: parent.width - backButton.width - frontButton.width
                 text: "https://helpx.adobe.com/flash-player.html"
+                //text: "https://api.gazerecorder.com/"
+
 
                 activeFocusOnPress: true
 
@@ -82,20 +76,27 @@ Rectangle {
         anchors.top: buttoncontainer.bottom
         onNewViewRequested: {console.log("new view requested")}
 
-//        userScripts: {
+        WebEngineScript{
+            //injectionPoint: WebEngineScript.DocumentReady
+            name: "GazeCloudApi"
+            //sourceUrl: "qrc:///GazeCloudAPI.js"
+            //sourceUrl: "/home/tylnesh/hello.js"
+            sourceCode: "window.alert('hello world');"
 
-//                injectionPoint : WebEngineScript.DocumentReady
-//                name : 'gaze'
-//                sourceUrl : 'GazeCloudAPI.js'
-//                worldId : WebEngineScript.MainWorld
 
+            worldId: WebEngineScript.MainWorld
 
-//        }
+        }
 
+        settings.allowWindowActivationFromJavaScript: true
 
         settings.pluginsEnabled: true // needed for the adobe flash plugin to work
 
         onUrlChanged: urlOrSearch.text = webView.url
+
+        onFeaturePermissionRequested: {
+           grantFeaturePermission(securityOrigin, feature, true);
+        }
 
         property int spX: 0
         property int spY: 0
