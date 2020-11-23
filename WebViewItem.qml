@@ -5,14 +5,31 @@ import QtWebEngine 1.8
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import com.eyebrowser.linkvalidator 1.0
-//import "GazeCloudAPI.js" as Gaze
+import "GazeCloudAPI.js" as Gaze
 
 Rectangle {
     property string siteName: webView.title
     signal newTab
     signal closeTab
 
-    Component.onCompleted: webView.url = urlOrSearch.text
+
+
+
+
+
+
+
+    Component.onCompleted: {
+
+        webView.url = urlOrSearch.text
+//        webView.runJavaScript('var s = document.createElement("script");
+//    s.src = "/home/tylnesh/GazeCloudAPI.js";
+//    document.body.appendChild(s);
+//window.setTimeout(GazeCloudAPI.StartEyeTracking(), 200);
+//')
+
+
+    }
 
     LinkValidator {
         id: validator
@@ -63,10 +80,17 @@ Rectangle {
         width: parent.width
         height: parent.height - buttoncontainer.height
         anchors.top: buttoncontainer.bottom
+        onNewViewRequested: {console.log("new view requested")}
 
-        userScripts: {
+//        userScripts: {
 
-        }
+//                injectionPoint : WebEngineScript.DocumentReady
+//                name : 'gaze'
+//                sourceUrl : 'GazeCloudAPI.js'
+//                worldId : WebEngineScript.MainWorld
+
+
+//        }
 
 
         settings.pluginsEnabled: true // needed for the adobe flash plugin to work
@@ -94,10 +118,10 @@ Rectangle {
               webView.runJavaScript("document.body.scrollHeight", result => { webView.scrollHeight = result});
               webView.runJavaScript("document.body.scrollWidth", result => { webView.scrollWidth = result});
 
-                console.log("yChange: " + yChange);
-                console.log("newY: " + newY);
-                console.log("webView.scrollHeight: " + webView.scrollHeight);
-                console.log("Math.abs(webView.scrollHeight - newY) " + webView.scrollHeight);
+//                console.log("yChange: " + yChange);
+//                console.log("newY: " + newY);
+//                console.log("webView.scrollHeight: " + webView.scrollHeight);
+//                console.log("Math.abs(webView.scrollHeight - newY) " + webView.scrollHeight);
 
               if (xChange > 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = webView.scrollWidth
               if (yChange > 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = webView.scrollHeight

@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>WebViewItem.qml</file>
+        <file>GazeCloudAPI.js</file>
     </qresource>
 </RCC>
