@@ -11,6 +11,13 @@ Rectangle {
     signal newTab
     signal closeTab
 
+
+
+
+
+
+
+
     Component.onCompleted: {
 
         webView.url = urlOrSearch.text
@@ -76,24 +83,37 @@ Rectangle {
         anchors.top: buttoncontainer.bottom
         onNewViewRequested: {console.log("new view requested")}
 
-        WebEngineScript{
-            //injectionPoint: WebEngineScript.DocumentReady
-            name: "GazeCloudApi"
-            //sourceUrl: "qrc:///GazeCloudAPI.js"
-            //sourceUrl: "/home/tylnesh/hello.js"
-            sourceCode: "window.alert('hello world');"
+//        WebEngineScript{
+//            injectionPoint: WebEngineScript.DocumentReady
+//            name: "GazeCloudApi"
+//            sourceUrl: "/home/tylnesh/GazeCloudAPI.js"
+//            //sourceUrl: "/home/tylnesh/hello.js"
+//            sourceCode: "alert('hello world');"
 
 
-            worldId: WebEngineScript.MainWorld
+//            worldId: WebEngineScript.MainWorld
 
-        }
+//        }
+
 
         settings.allowWindowActivationFromJavaScript: true
-
         settings.pluginsEnabled: true // needed for the adobe flash plugin to work
 
-        onUrlChanged: urlOrSearch.text = webView.url
+        onUrlChanged: {
 
+            urlOrSearch.text = webView.url
+
+
+           const cmd2 =  "{ var script = document.createElement('script');
+            script.src = '/home/tylnesh/GazeCloudAPI.js';
+            script.type = 'text/javascript';
+            script.defer = true;
+
+            console.log(document.getElementsByTagName('head').item(0));
+            document.getElementsByTagName('head').item(0).appendChild(script); }";
+
+            webView.runJavaScript(cmd2)
+        }
         onFeaturePermissionRequested: {
            grantFeaturePermission(securityOrigin, feature, true);
         }
@@ -106,6 +126,8 @@ Rectangle {
 
         onScrollPositionChanged: {
 
+
+
             //TODO: Add a short delay between scroll events so that user doesn't scroll past the content too fast.
             const delay = 500
 
@@ -115,6 +137,7 @@ Rectangle {
             const update = (xChange, yChange) => {
               const newX = x + xChange;
               const newY = y + yChange;
+
 
               webView.runJavaScript("document.body.scrollHeight", result => { webView.scrollHeight = result});
               webView.runJavaScript("document.body.scrollWidth", result => { webView.scrollWidth = result});
