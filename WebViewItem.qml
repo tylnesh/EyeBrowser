@@ -11,22 +11,9 @@ Rectangle {
     signal newTab
     signal closeTab
 
-
-
-
-
-
-
-
     Component.onCompleted: {
 
         webView.url = urlOrSearch.text
-//        webView.runJavaScript('var s = document.createElement("script");
-//    s.src = "/home/tylnesh/GazeCloudAPI.js";
-//    document.body.appendChild(s);
-//window.setTimeout(GazeCloudAPI.StartEyeTracking(), 200);
-//')
-
 
     }
 
@@ -51,13 +38,18 @@ Rectangle {
                 onClicked: webView.goFront()
             }
 
+            Button {
+                id: eyeButton
+                text: "(‧)"
+                onClicked: webView.startEyeTracking()
+            }
+
+
+
             TextEdit {
                 id: urlOrSearch
                 width: parent.width - backButton.width - frontButton.width
-                text: "https://helpx.adobe.com/flash-player.html"
-                //text: "https://api.gazerecorder.com/"
-
-
+                text: "https://edu.ukf.sk"
                 activeFocusOnPress: true
 
                 selectByKeyboard: true
@@ -76,43 +68,55 @@ Rectangle {
         }
     }
 
+
     WebEngineView {
         id: webView
+
+        signal startEyeTracking
+
         width: parent.width
         height: parent.height - buttoncontainer.height
         anchors.top: buttoncontainer.bottom
+
+
         onNewViewRequested: {console.log("new view requested")}
 
-//        WebEngineScript{
-//            injectionPoint: WebEngineScript.DocumentReady
-//            name: "GazeCloudApi"
-//            sourceUrl: "/home/tylnesh/GazeCloudAPI.js"
-//            //sourceUrl: "/home/tylnesh/hello.js"
-//            sourceCode: "alert('hello world');"
+        userScripts: [
 
+        WebEngineScript{
+            injectionPoint: WebEngineScript.DocumentCreation
+            name: "Gaze"
+            sourceUrl: "file:///home/tylnesh/GazeCloudAPI.js"
+            worldId: WebEngineScript.MainWorld
 
-//            worldId: WebEngineScript.MainWorld
-
-//        }
-
+        }
+]
 
         settings.allowWindowActivationFromJavaScript: true
         settings.pluginsEnabled: true // needed for the adobe flash plugin to work
+
+
+
+        onStartEyeTracking: {
+
+            webView.runJavaScript("GazeCloudAPI.StartEyeTracking();");
+//           webView.runJavascript("
+//                        GazeCloudAPI.OnResult = function (GazeData) { GazeData.state // 0: valid gaze data; -1 : face tracking lost, 1 : gaze data uncalibrated
+//                        GazeData.docX // gaze x in document coordinates
+//                        GazeData.docY // gaze y in document coordinates
+//                        GazeData.time // timestamp
+//    ");
+//            webView.runJavaScript("GazeCloudAPI.StopEyeTracking();");
+
+        }
+
 
         onUrlChanged: {
 
             urlOrSearch.text = webView.url
 
 
-           const cmd2 =  "{ var script = document.createElement('script');
-            script.src = '/home/tylnesh/GazeCloudAPI.js';
-            script.type = 'text/javascript';
-            script.defer = true;
 
-            console.log(document.getElementsByTagName('head').item(0));
-            document.getElementsByTagName('head').item(0).appendChild(script); }";
-
-            webView.runJavaScript(cmd2)
         }
         onFeaturePermissionRequested: {
            grantFeaturePermission(securityOrigin, feature, true);
@@ -124,11 +128,12 @@ Rectangle {
         property int scrollHeight: 0
         property int scrollWidth: 0
 
+
+
+
         onScrollPositionChanged: {
 
-
-
-            //TODO: Add a short delay between scroll events so that user doesn't scroll past the content too fast.
+           //TODO: Add a short delay between scroll events so that user doesn't scroll past the content too fast.
             const delay = 500
 
             var x = webView.scrollPosition.x

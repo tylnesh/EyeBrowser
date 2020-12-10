@@ -18,12 +18,7 @@ Window {
 
     ListModel {
         id:tabModel
-
     }
-
- //   WebEngineSettings{
- //       pluginsEnabled: true
- //   }
 
     Component {
         id: tabComponent
@@ -33,12 +28,10 @@ Window {
             onNewTab: {
                 tabRepeater.model++
                 console.log(tabRepeater.model)
-
                 var newTabItem = tabComponent.createObject(null, {
                                                                "id": "tabName"
                                                            })
                 stackLayout.children.push(newTabItem)
-                //tabBar.addItem(newTabItem);
             }
         }
     }
@@ -48,13 +41,9 @@ Window {
     TabBar {
         id: tabBar
         width: parent.width
-
         Repeater {
             id: tabRepeater
             model: tabModel
-
-
-
             TabButton {
                 text: stackLayout.activeFocusOnTab
                 width: implicitWidth
@@ -76,8 +65,6 @@ Window {
             WebViewItem {
                 id: firstTab
                 onNewTab: {
-                    //tabRepeater.model++
-
                     var newTabItem = tabComponent.createObject(null, {"id": "tabName"})
                     tabModel.append(tabComponent.createObject(null, {"id": "tabName"}));
 
