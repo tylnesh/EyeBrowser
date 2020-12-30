@@ -4,12 +4,23 @@ import QtQuick.Window 2.12
 import QtWebEngine 1.8
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
+import QtQuick.Dialogs 1.3
 import com.eyebrowser.linkvalidator 1.0
+
 
 Rectangle {
     property string siteName: webView.title
+    property string siteURL
+
+
     signal newTab
     signal closeTab
+
+    width: parent.width
+    height: parent.height
+
+
+
 
     Component.onCompleted: {
 
@@ -35,7 +46,7 @@ Rectangle {
             Button {
                 id: frontButton
                 text: "->"
-                onClicked: webView.goFront()
+                onClicked: webView.goForward()
             }
 
             Button {
@@ -49,7 +60,7 @@ Rectangle {
             TextEdit {
                 id: urlOrSearch
                 width: parent.width - backButton.width - frontButton.width
-                text: "https://edu.ukf.sk"
+                text: siteURL
                 activeFocusOnPress: true
 
                 selectByKeyboard: true
@@ -58,7 +69,12 @@ Rectangle {
 
                 onFocusChanged: selectAll()
 
-                Keys.onEnterPressed: webView.url = text
+                Keys.onEnterPressed: {
+
+                    webView.url = validator.validateLink(text)
+                    webView.forceActiveFocus()
+                }
+
                 Keys.onReturnPressed: {
 
                     webView.url = validator.validateLink(text)
@@ -89,7 +105,15 @@ Rectangle {
             sourceUrl: "file:///home/tylnesh/GazeCloudAPI.js"
             worldId: WebEngineScript.MainWorld
 
-        }
+        },
+
+            WebEngineScript{
+                injectionPoint: WebEngineScript.DocumentCreation
+                name: "heatmap"
+                sourceUrl: "file:///home/tylnesh/heatmapLive.js"
+                worldId: WebEngineScript.MainWorld
+
+            }
 ]
 
         settings.allowWindowActivationFromJavaScript: true
@@ -100,6 +124,8 @@ Rectangle {
         onStartEyeTracking: {
 
             webView.runJavaScript("GazeCloudAPI.StartEyeTracking();");
+            webView.runJavaScript("ShowHeatMap();")
+            webView.runJavaScript("GazeCloudAPI.GazeData", result => { console.log(result)});
 //           webView.runJavascript("
 //                        GazeCloudAPI.OnResult = function (GazeData) { GazeData.state // 0: valid gaze data; -1 : face tracking lost, 1 : gaze data uncalibrated
 //                        GazeData.docX // gaze x in document coordinates
@@ -129,56 +155,101 @@ Rectangle {
         property int scrollWidth: 0
 
 
+        onCertificateError: function(error) {
+                            error.defer();
+                            sslDialog.enqueue(error);
+                        }
 
 
-        onScrollPositionChanged: {
+        MessageDialog {
+               id: sslDialog
 
-           //TODO: Add a short delay between scroll events so that user doesn't scroll past the content too fast.
-            const delay = 500
+               property var certErrors: []
+               icon: StandardIcon.Warning
+               standardButtons: StandardButton.No | StandardButton.Yes
+               title: "Server's certificate not trusted"
+               text: "Do you wish to continue?"
+               detailedText: "If you wish so, you may continue with an unverified certificate. " +
+                             "Accepting an unverified certificate means " +
+                             "you may not be connected with the host you tried to connect to.\n" +
+                             "Do you wish to override the security check and continue?"
+               onYes: {
+                   certErrors.shift().ignoreCertificateError();
+                   presentError();
+               }
+               onNo: reject()
+               onRejected: reject()
 
-            var x = webView.scrollPosition.x
-            var y = webView.scrollPosition.y
+               function reject(){
+                   certErrors.shift().rejectCertificate();
+                   presentError();
+               }
+               function enqueue(error){
+                   certErrors.push(error);
+                   presentError();
+               }
+               function presentError(){
+                   visible = certErrors.length > 0
+               }
+           }
 
-            const update = (xChange, yChange) => {
-              const newX = x + xChange;
-              const newY = y + yChange;
-
-
-              webView.runJavaScript("document.body.scrollHeight", result => { webView.scrollHeight = result});
-              webView.runJavaScript("document.body.scrollWidth", result => { webView.scrollWidth = result});
-
-//                console.log("yChange: " + yChange);
-//                console.log("newY: " + newY);
-//                console.log("webView.scrollHeight: " + webView.scrollHeight);
-//                console.log("Math.abs(webView.scrollHeight - newY) " + webView.scrollHeight);
-
-              if (xChange > 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = webView.scrollWidth
-              if (yChange > 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = webView.scrollHeight
-
-              if (xChange < 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = 0
-              if (yChange < 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = 0
-
-              const command = "window.setTimeout(window.scrollTo(" + newX + ", " + newY + "),"+ delay + ");"
-              webView.runJavaScript(command);
-              webView.spX = newX;
-              webView.spY = newY;
-
-
-            }
-
-            if (x > webView.spX) {
-                update(webview.width, 0)
-            } else if (x < webView.spX) {
-                update(-webView.width,0)
-            }
-
-            if (y > webView.spY) {
-                update(0, webView.height)
-            } else if (y < webView.spY) {
-                update(0, -webView.height)
-            }
-
+        onJavaScriptConsoleMessage: {
+        console.log("js")
         }
+
+
+
+
+
+
+//        onScrollPositionChanged: {
+
+//           //TODO: Add a short delay between scroll events so that user doesn't scroll past the content too fast.
+//            const delay = 500
+
+//            var x = webView.scrollPosition.x
+//            var y = webView.scrollPosition.y
+
+//            const update = (xChange, yChange) => {
+//              const newX = x + xChange;
+//              const newY = y + yChange;
+
+
+//              webView.runJavaScript("document.body.scrollHeight", result => { webView.scrollHeight = result});
+//              webView.runJavaScript("document.body.scrollWidth", result => { webView.scrollWidth = result});
+
+////                console.log("yChange: " + yChange);
+////                console.log("newY: " + newY);
+////                console.log("webView.scrollHeight: " + webView.scrollHeight);
+////                console.log("Math.abs(webView.scrollHeight - newY) " + webView.scrollHeight);
+
+//              if (xChange > 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = webView.scrollWidth
+//              if (yChange > 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = webView.scrollHeight
+
+//              if (xChange < 0 && Math.abs(webView.scrollWidth - newX) < xChange) newX = 0
+//              if (yChange < 0 && Math.abs(webView.scrollHeight - newY) < yChange) newY = 0
+
+//              const command = "window.setTimeout(window.scrollTo(" + newX + ", " + newY + "),"+ delay + ");"
+//              webView.runJavaScript(command);
+//              webView.spX = newX;
+//              webView.spY = newY;
+
+
+//            }
+
+//            if (x > webView.spX) {
+//                update(webview.width, 0)
+//            } else if (x < webView.spX) {
+//                update(-webView.width,0)
+//            }
+
+//            if (y > webView.spY) {
+//                update(0, webView.height)
+//            } else if (y < webView.spY) {
+//                update(0, -webView.height)
+//            }
+
+//        }
 
          onGeometryChangeRequested: {
              window.x = geometry.x
